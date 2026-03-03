@@ -28,7 +28,7 @@ jobs:
           cd build/ios/iphoneos
           mkdir Payload
           cp -r Runner.app Payload
-          zip -r iot_chan_nuoi_app_build ${{ github.run_number }}.ipa Payload
+          zip -r iot_chan_nuoi_app_build_${{ github.run_number }}.ipa Payload
           rm -rf Payload
 
       - name: Upload to GitHub Releases
@@ -36,5 +36,5 @@ jobs:
         with:
           tag_name: iot_chan_nuoi-${{ github.run_number }}
           name: Unsigned iOS app - Build ${{ github.run_number }}
-          files: build/ios/iphoneos/iot_chan_nuoi_app_build ${{ github.run_number }}.ipa
+          files: build/ios/iphoneos/iot_chan_nuoi_app_build_${{ github.run_number }}.ipa
           draft: true
