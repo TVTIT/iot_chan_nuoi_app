@@ -4,24 +4,13 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../model/sensors_model.dart';
 
-class ListNodesScreen extends StatelessWidget {
+class ListNodesScreen extends StatefulWidget {
   const ListNodesScreen({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: IotDashboard(),
-    );
-  }
+  State<ListNodesScreen> createState() => _ListNodesScreenState();
 }
 
-class IotDashboard extends StatefulWidget {
-  const IotDashboard({super.key});
-  @override
-  State<IotDashboard> createState() => _IotDashboardState();
-}
-
-class _IotDashboardState extends State<IotDashboard> {
+class _ListNodesScreenState extends State<ListNodesScreen> {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref('farm_monitor');
 
   //theo dõi có mạng hay không
