@@ -1,0 +1,40 @@
+name: Build and distribute unsigned IPA
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  build:
+    name: Build iOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build unsigned iOS app
+        run: flutter build ios --release --no-codesign
+
+      - name: Compress to .ipa file
+        run: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload
+          zip -r first_app.ipa Payload
+          rm -rf Payload
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: iot_chan_nuoi-${{ github.run_number }}
+          name: Unsigned iOS app - Build ${{ github.run_number }}
+          files: build/ios/iphoneos/iot_chan_nuoi_app_build ${{ github.run_number }}.ipa
+          draft: true
