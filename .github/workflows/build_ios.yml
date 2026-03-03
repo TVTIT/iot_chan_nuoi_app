@@ -28,7 +28,7 @@ jobs:
           cd build/ios/iphoneos
           mkdir Payload
           cp -r Runner.app Payload
-          zip -r first_app.ipa Payload
+          zip -r iot_chan_nuoi_app_build ${{ github.run_number }}.ipa Payload
           rm -rf Payload
 
       - name: Upload to GitHub Releases
