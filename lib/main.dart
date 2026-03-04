@@ -1,18 +1,11 @@
-import 'dart:async';
-import 'dart:ui';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:iot_chan_nuoi_app/view/login_screen.dart';
 import 'firebase_options.dart';
-import 'model/sensors_model.dart';
 import 'model/vi_localization.dart';
-import 'view/list_nodes_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
