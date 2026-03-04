@@ -15,6 +15,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
 
   //theo dõi có mạng hay không
   final ValueNotifier<bool> _isOnline = ValueNotifier(true);
+  Timer? delayOfflineTimer;
 
   late StreamSubscription<List<ConnectivityResult>> _networkSubscription;
 
@@ -29,9 +30,15 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
       _isOnline.value = !results.contains(ConnectivityResult.none);
 
       if (!_isOnline.value) {
-        if (mounted) {
-          _lostConnectionDialogBuilder(context);
-        }
+        delayOfflineTimer?.cancel();
+        delayOfflineTimer = Timer(const Duration(seconds: 1), () {
+          if (mounted && !_isOnline.value) {
+            _lostConnectionDialogBuilder(context);
+          }
+        });
+      }
+      else {
+        delayOfflineTimer?.cancel();
       }
     });
   }
@@ -57,6 +64,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   @override
   void dispose() {
     _networkSubscription.cancel();
+    delayOfflineTimer?.cancel();
     _isOnline.dispose();
     super.dispose();
   }
