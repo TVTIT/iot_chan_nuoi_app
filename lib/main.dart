@@ -15,7 +15,7 @@ import 'model/vi_localization.dart';
 import 'view/list_nodes_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   try {
@@ -23,7 +23,8 @@ void main() async {
 
     //Khởi tạo Firebase
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -35,19 +36,23 @@ void main() async {
       return true;
     };
 
-    //Cấu hình thông báo cho Android
-    const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+    //Cấu hình thông báo
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+        );
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: androidSettings, iOS: iosSettings);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     runApp(const MyApp());
-  }
-  catch (e, stackTrace) {
+  } catch (e, stackTrace) {
     runApp(
       MaterialApp(
         home: Scaffold(
@@ -56,7 +61,11 @@ void main() async {
               padding: const EdgeInsets.all(20),
               child: Text(
                 "Error:\n\n$e\n\n$stackTrace",
-                style: const TextStyle(color: Colors.white, backgroundColor: Colors.red, fontSize: 14),
+                style: const TextStyle(
+                  color: Colors.white,
+                  backgroundColor: Colors.red,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
