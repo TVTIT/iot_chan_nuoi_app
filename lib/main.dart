@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ui';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
@@ -13,25 +15,55 @@ import 'model/vi_localization.dart';
 import 'view/list_nodes_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  //Khởi tạo Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    //Khởi tạo Firebase
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
 
-  //Cấu hình thông báo cho Android
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
 
-  final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-  );
+    // Bắt mọi lỗi bất đồng bộ (ví dụ: lỗi Stream, lỗi API, lỗi Future)
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    //Cấu hình thông báo cho Android
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  runApp(const MyApp());
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    runApp(const MyApp());
+  }
+  catch (e, stackTrace) {
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                "Error:\n\n$e\n\n$stackTrace",
+                style: const TextStyle(color: Colors.white, backgroundColor: Colors.red, fontSize: 14),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
