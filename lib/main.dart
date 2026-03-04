@@ -18,63 +18,40 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void main() async {
-  try {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-    //Khởi tạo Firebase
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  //Khởi tạo Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
 
-    // Bắt mọi lỗi bất đồng bộ (ví dụ: lỗi Stream, lỗi API, lỗi Future)
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
+  // Bắt mọi lỗi bất đồng bộ (ví dụ: lỗi Stream, lỗi API, lỗi Future)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
-    //Cấu hình thông báo
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  //Cấu hình thông báo
+  const AndroidInitializationSettings androidSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-        );
+  const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+  );
 
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: androidSettings, iOS: iosSettings);
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    LoginScreen.localizeError();
+  LoginScreen.localizeError();
 
-    runApp(const MyApp());
-  } catch (e, stackTrace) {
-    runApp(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                "Error:\n\n$e\n\n$stackTrace",
-                style: const TextStyle(
-                  color: Colors.white,
-                  backgroundColor: Colors.red,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
