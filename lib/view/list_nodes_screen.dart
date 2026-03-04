@@ -66,7 +66,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text("Trạm Quan Trắc"),
+        title: const Text("Danh sách các Node"),
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: _isOnline,
@@ -77,7 +77,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                   children: [
                     Text(
                       isOnline ? "Online" : "Offline",
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(width: 8),
 
