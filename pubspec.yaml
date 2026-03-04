@@ -44,6 +44,7 @@ dependencies:
     # Hiển thị thông báo (Local Notifications)
   flutter_local_notifications: ^18.0.1
   connectivity_plus: ^6.0.3
+  firebase_crashlytics: ^5.0.8
 
 
 dev_dependencies:

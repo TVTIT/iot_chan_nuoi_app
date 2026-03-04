@@ -28,8 +28,8 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
     _networkSubscription = Connectivity().onConnectivityChanged.listen((results) {
       _isOnline.value = !results.contains(ConnectivityResult.none);
 
-      if (mounted) {
-        if (!_isOnline.value) {
+      if (!_isOnline.value) {
+        if (mounted) {
           _lostConnectionDialogBuilder(context);
         }
       }

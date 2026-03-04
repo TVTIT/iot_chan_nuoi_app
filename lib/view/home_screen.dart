@@ -13,15 +13,16 @@ class _HomeScreenState extends State<HomeScreen> {
   //lưu vị trí các tab
   int _currentIndex = 0;
 
-  final List<Widget> _listScreens = [
-    const ListNodesScreen(),
-    const MyHomeScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _listScreens[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          const ListNodesScreen(),
+          const MyHomeScreen()
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (int index) {

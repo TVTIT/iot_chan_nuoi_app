@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ui';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +23,33 @@ void main() async {
   //Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  //Cấu hình thông báo cho Android
-  const AndroidInitializationSettings initializationSettingsAndroid =
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+
+  // Bắt mọi lỗi bất đồng bộ (ví dụ: lỗi Stream, lỗi API, lỗi Future)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
+  //Cấu hình thông báo
+  const AndroidInitializationSettings androidSettings =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
+  const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+  );
+
   final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
+    android: androidSettings,
+    iOS: iosSettings,
   );
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  LoginScreen.localizeError();
 
   runApp(const MyApp());
 }
