@@ -51,6 +51,8 @@ void main() async {
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
+    LoginScreen.localizeError();
+
     runApp(const MyApp());
   } catch (e, stackTrace) {
     runApp(
