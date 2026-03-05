@@ -42,7 +42,7 @@ dependencies:
   firebase_ui_localizations: ^2.0.1
 
     # Hiển thị thông báo (Local Notifications)
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^20.1.0
   connectivity_plus: ^6.0.3
   firebase_crashlytics: ^5.0.8
   package_info_plus: ^9.0.0

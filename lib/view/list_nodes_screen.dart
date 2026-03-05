@@ -2,16 +2,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../model/sensors_model.dart';
+import '../main.dart';
 
 class ListNodesScreen extends StatefulWidget {
   const ListNodesScreen({super.key});
+
   @override
   State<ListNodesScreen> createState() => _ListNodesScreenState();
 }
 
 class _ListNodesScreenState extends State<ListNodesScreen> {
-  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref('farm_monitor');
+  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref(
+    'farm_monitor',
+  );
 
   //theo dõi có mạng hay không
   final ValueNotifier<bool> _isOnline = ValueNotifier(true);
@@ -26,7 +31,9 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   }
 
   void _khoiTaoLangNgheMang() {
-    _networkSubscription = Connectivity().onConnectivityChanged.listen((results) {
+    _networkSubscription = Connectivity().onConnectivityChanged.listen((
+      results,
+    ) {
       _isOnline.value = !results.contains(ConnectivityResult.none);
 
       if (!_isOnline.value) {
@@ -36,8 +43,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
             _lostConnectionDialogBuilder(context);
           }
         });
-      }
-      else {
+      } else {
         delayOfflineTimer?.cancel();
       }
     });
@@ -45,19 +51,19 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
 
   Future<void> _lostConnectionDialogBuilder(BuildContext context) {
     return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Mất kết nối'),
-            content: const Text('Mất kết nối Internet. Vui lòng kiểm tra lại'),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK')
-              )
-            ],
-          );
-        }
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Mất kết nối'),
+          content: const Text('Mất kết nối Internet. Vui lòng kiểm tra lại'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -103,7 +109,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                               color: Colors.green.withValues(alpha: 0.6),
                               blurRadius: 5,
                               spreadRadius: 2,
-                            )
+                            ),
                         ],
                       ),
                     ),
@@ -120,7 +126,8 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
             //convert json
-            final rawData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+            final rawData =
+                snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
             List<FarmNode> sensors = [];
             rawData.forEach((key, value) {
               final node = FarmNode.fromEntry(key.toString(), value as Map);
@@ -134,15 +141,20 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
               itemCount: sensors.length,
               itemBuilder: (context, index) {
                 final sensor = sensors[index];
+                checkAndShowNotification(sensor);
                 return Card(
                   margin: const EdgeInsets.all(8.0),
                   child: ListTile(
-                    title: Text("Trạm: ${sensor.id}",
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(
+                      "Trạm: ${sensor.id}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Nhiệt độ: ${sensor.temperature.toStringAsFixed(2)} °C"),
+                        Text(
+                          "Nhiệt độ: ${sensor.temperature.toStringAsFixed(2)} °C",
+                        ),
                         Text("Độ ẩm: ${sensor.humidity.toStringAsFixed(2)} %"),
                         Text("Khí Gas: ${sensor.gasCh4}"),
                         Text("Tín hiệu (RSSI): ${sensor.rssi}"),
@@ -160,6 +172,42 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
         },
       ),
     );
+  }
+
+  Future<void> checkAndShowNotification(FarmNode node) async {
+    if (node.temperature > 40 &&
+        node.temperature < 100) {
+      const AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+            'iot_chan_nuoi_alert',
+            'Cảnh báo nhiệt độ quá ngưỡng',
+            channelDescription:
+                'Nhận cảnh báo khẩn cấp khi nhiệt độ vượt ngưỡng an toàn',
+            importance: Importance.max,
+            priority: Priority.high,
+            icon: '@mipmap/launcher_icon',
+            ticker: 'Có cảnh báo chuồng chăn nuôi',
+          );
+      const DarwinNotificationDetails iosNotificationDetails =
+          DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          );
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidNotificationDetails,
+        iOS: iosNotificationDetails,
+      );
+      return flutterLocalNotificationsPlugin.show(
+        id: 0,
+        title: 'Cảnh báo nhiệt độ vượt ngưỡng',
+        body:
+            'Nhiệt độ hiện tại ở node ${node.id} '
+            'đang ở mức cao: ${node.temperature} °C',
+        notificationDetails: notificationDetails,
+        payload: 'item x',
+      );
+    }
   }
 
   Widget _buildStatusIcon(double temp) {

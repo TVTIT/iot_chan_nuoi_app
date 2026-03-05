@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+import '../main.dart';
 
 class MyHomeScreen extends StatelessWidget {
   const MyHomeScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {
