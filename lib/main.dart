@@ -18,7 +18,7 @@ void main() async {
 
   //Cấu hình thông báo
   const AndroidInitializationSettings androidSettings =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/launcher_icon');
 
   const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
     requestAlertPermission: true,
@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "IOT chăn nuôi",
       localizationsDelegates: [
         FirebaseUILocalizations.withDefaultOverrides(ViLocalizations()),
         GlobalMaterialLocalizations.delegate,
