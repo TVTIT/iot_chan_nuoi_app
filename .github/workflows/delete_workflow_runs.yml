@@ -1,4 +1,4 @@
-name: Delete all workflow runs
+name: Delete all draft releases
 
 on:
   workflow_dispatch:
