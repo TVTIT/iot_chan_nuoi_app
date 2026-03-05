@@ -185,7 +185,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                 'Nhận cảnh báo khẩn cấp khi nhiệt độ vượt ngưỡng an toàn',
             importance: Importance.max,
             priority: Priority.high,
-            icon: '@mipmap/launcher_icon',
+            icon: 'ic_stat_sanslab_logo',
             ticker: 'Có cảnh báo chuồng chăn nuôi',
           );
       const DarwinNotificationDetails iosNotificationDetails =
