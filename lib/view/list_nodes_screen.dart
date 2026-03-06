@@ -15,15 +15,14 @@ class ListNodesScreen extends StatefulWidget {
 }
 
 class _ListNodesScreenState extends State<ListNodesScreen> {
-
   //theo dõi có mạng hay không
   final ValueNotifier<bool> _isOnline = ValueNotifier(true);
   Timer? delayOfflineTimer;
   late Query _nodesQuery;
 
   List<String> _userNodeIdOwned = [];
+  bool _isLoadedListNodeId = false;
   late StreamSubscription _userNodesSubscription;
-
   late StreamSubscription<List<ConnectivityResult>> _networkSubscription;
 
   @override
@@ -38,6 +37,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
         .onValue
         .listen((event) {
           if (event.snapshot.value != null) {
+            _isLoadedListNodeId = true;
             final Map<dynamic, dynamic> nodesMap = event.snapshot.value as Map;
             setState(() {
               // Lọc ra các key có giá trị true (node_1, node_2...)
@@ -142,7 +142,17 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
       ),
 
       body: _userNodeIdOwned.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? !_isLoadedListNodeId
+                //Chưa load đươc -> hiện icon loading
+                ? const Center(child: CircularProgressIndicator())
+                //Đã load nhưng không có node nào -> hiện không có node nào
+                : const Center(
+                    child: Text(
+                      'Bạn không sở hữu bất kì node nào',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  )
+          //Đã load và có node -> hiện các node ra
           : ListView.builder(
               itemCount: _userNodeIdOwned.length,
               itemBuilder: (context, index) {
