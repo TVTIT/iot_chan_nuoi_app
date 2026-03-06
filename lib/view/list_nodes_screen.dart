@@ -33,7 +33,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
     final String userUid = FirebaseAuth.instance.currentUser!.uid;
 
     _userNodesSubscription = FirebaseDatabase.instance
-        .ref('owner_users/$userUid')
+        .ref('users_list/$userUid/nodes_owned')
         .onValue
         .listen((event) {
           if (event.snapshot.value != null) {
