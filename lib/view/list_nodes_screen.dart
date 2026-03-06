@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -14,13 +15,14 @@ class ListNodesScreen extends StatefulWidget {
 }
 
 class _ListNodesScreenState extends State<ListNodesScreen> {
-  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref(
-    'farm_monitor',
-  );
 
   //theo dõi có mạng hay không
   final ValueNotifier<bool> _isOnline = ValueNotifier(true);
   Timer? delayOfflineTimer;
+  late Query _nodesQuery;
+
+  List<String> _userNodeIdOwned = [];
+  late StreamSubscription _userNodesSubscription;
 
   late StreamSubscription<List<ConnectivityResult>> _networkSubscription;
 
@@ -28,6 +30,24 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   void initState() {
     super.initState();
     _khoiTaoLangNgheMang();
+
+    final String userUid = FirebaseAuth.instance.currentUser!.uid;
+
+    _userNodesSubscription = FirebaseDatabase.instance
+        .ref('owner_users/$userUid')
+        .onValue
+        .listen((event) {
+          if (event.snapshot.value != null) {
+            final Map<dynamic, dynamic> nodesMap = event.snapshot.value as Map;
+            setState(() {
+              // Lọc ra các key có giá trị true (node_1, node_2...)
+              _userNodeIdOwned = nodesMap.entries
+                  .where((entry) => entry.value == true)
+                  .map((entry) => entry.key.toString())
+                  .toList();
+            });
+          }
+        });
   }
 
   void _khoiTaoLangNgheMang() {
@@ -121,62 +141,62 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
         ],
       ),
 
-      body: StreamBuilder(
-        stream: _databaseRef.onValue,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
-            //convert json
-            final rawData =
-                snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-            List<FarmNode> sensors = [];
-            rawData.forEach((key, value) {
-              final node = FarmNode.fromEntry(key.toString(), value as Map);
-              sensors.add(node);
-            });
-
-            //sắp xếp node theo id
-            sensors.sort((a, b) => a.id.compareTo(b.id));
-
-            return ListView.builder(
-              itemCount: sensors.length,
+      body: _userNodeIdOwned.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: _userNodeIdOwned.length,
               itemBuilder: (context, index) {
-                final sensor = sensors[index];
-                checkAndShowNotification(sensor);
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(
-                      "Trạm: ${sensor.id}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Nhiệt độ: ${sensor.temperature.toStringAsFixed(2)} °C",
+                final String nodeId = _userNodeIdOwned[index];
+                final databaseRef = FirebaseDatabase.instance.ref(
+                  'farm_monitor/${nodeId}',
+                );
+
+                return StreamBuilder(
+                  stream: databaseRef.onValue,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.data!.snapshot.value != null) {
+                      final sensor = FarmNode.fromEntry(
+                        nodeId,
+                        snapshot.data!.snapshot.value as Map,
+                      );
+                      checkAndShowNotification(sensor);
+                      return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(
+                            "Trạm: ${sensor.id}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Nhiệt độ: ${sensor.temperature.toStringAsFixed(2)} °C",
+                              ),
+                              Text(
+                                "Độ ẩm: ${sensor.humidity.toStringAsFixed(2)} %",
+                              ),
+                              Text("Khí Gas: ${sensor.gasCh4}"),
+                              Text("Tín hiệu (RSSI): ${sensor.rssi}"),
+                            ],
+                          ),
+                          trailing: _buildStatusIcon(sensor.temperature),
                         ),
-                        Text("Độ ẩm: ${sensor.humidity.toStringAsFixed(2)} %"),
-                        Text("Khí Gas: ${sensor.gasCh4}"),
-                        Text("Tín hiệu (RSSI): ${sensor.rssi}"),
-                      ],
-                    ),
-                    trailing: _buildStatusIcon(sensor.temperature),
-                  ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Lỗi: ${snapshot.error}"));
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  },
                 );
               },
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Lỗi: ${snapshot.error}"));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+            ),
     );
   }
 
   Future<void> checkAndShowNotification(FarmNode node) async {
-    if (node.temperature > 40 &&
-        node.temperature < 100) {
+    if (node.temperature > 40 && node.temperature < 100) {
       const AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails(
             'iot_chan_nuoi_alert',
