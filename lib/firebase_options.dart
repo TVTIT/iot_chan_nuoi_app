@@ -50,21 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBMPa_9UtVGITQmsXs85_vjhqdKAck2eUQ',
-    appId: '1:649257186668:android:f785285171c65701a32f49',
-    messagingSenderId: '649257186668',
-    projectId: 'embedded-34716',
-    databaseURL: 'https://embedded-34716-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'embedded-34716.firebasestorage.app',
+    apiKey: 'AIzaSyChI7SwNRyk80YofbGVIwZZoZuTYUy9AEE',
+    appId: '1:554738307135:android:18562342b016e7e214688a',
+    messagingSenderId: '554738307135',
+    projectId: 'test-a5631',
+    databaseURL: 'https://test-a5631-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'test-a5631.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAWPsxXd7Z37QPL0ekBKEQRzRUNxbtsK0A',
-    appId: '1:649257186668:ios:d894cb74da96e7ada32f49',
-    messagingSenderId: '649257186668',
-    projectId: 'embedded-34716',
-    databaseURL: 'https://embedded-34716-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'embedded-34716.firebasestorage.app',
+    apiKey: 'AIzaSyA8IIh-A_Umq94HeMwQR9nzgiakwS_CmaU',
+    appId: '1:554738307135:ios:ff2c9f4a7f70da6914688a',
+    messagingSenderId: '554738307135',
+    projectId: 'test-a5631',
+    databaseURL: 'https://test-a5631-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'test-a5631.firebasestorage.app',
     iosBundleId: 'com.sanslab.iotchannuoi.iotChanNuoiApp',
   );
+
 }
