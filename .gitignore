@@ -47,3 +47,9 @@ app.*.map.json
 *.apk
 
 /android/build/
+
+#Firebase
+google-services.json
+GoogleService-Info.plist
+firebase.json
+firebase_options.dart
