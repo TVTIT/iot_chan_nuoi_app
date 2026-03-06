@@ -175,7 +175,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
                           title: Text(
-                            "Trạm: ${sensor.id}",
+                            "Trạm: ${sensor.name}",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Column(

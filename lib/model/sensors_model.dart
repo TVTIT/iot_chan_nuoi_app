@@ -1,5 +1,6 @@
 class FarmNode {
   final String id;
+  final String name;
   final double gasCh4;
   final double gasMq135;
   final double humidity;
@@ -11,6 +12,7 @@ class FarmNode {
 
   FarmNode({
     required this.id,
+    required this.name,
     required this.gasCh4,
     required this.gasMq135,
     required this.humidity,
@@ -37,6 +39,7 @@ class FarmNode {
 
     return FarmNode(
       id: key,
+      name: value['name'],
       gasCh4: toDouble(value['gas_ch4']),
       gasMq135: toDouble(value['gas_mq135']),
       humidity: toDouble(value['humidity']),
