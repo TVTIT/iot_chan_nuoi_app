@@ -29,23 +29,53 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   void initState() {
     super.initState();
     _khoiTaoLangNgheMang();
+    getNodeId();
+  }
 
+  Future<void> getNodeId() async {
+    setState(() {
+      _isLoadedListNodeId = false;
+    });
     final String userUid = FirebaseAuth.instance.currentUser!.uid;
-
     _userNodesSubscription = FirebaseDatabase.instance
-        .ref('users_list/$userUid/nodes_owned')
+        .ref('users_list/$userUid')
         .onValue
-        .listen((event) {
+        .listen((event) async {
           if (event.snapshot.value != null) {
-            _isLoadedListNodeId = true;
-            final Map<dynamic, dynamic> nodesMap = event.snapshot.value as Map;
-            setState(() {
-              // Lọc ra các key có giá trị true (node_1, node_2...)
-              _userNodeIdOwned = nodesMap.entries
-                  .where((entry) => entry.value == true)
-                  .map((entry) => entry.key.toString())
-                  .toList();
-            });
+            final Map<dynamic, dynamic> userData =
+                event.snapshot.value as Map<dynamic, dynamic>;
+            if (userData['role']?.toString() == 'admin') {
+              DataSnapshot snapshot = await FirebaseDatabase.instance
+                  .ref('farm_monitor')
+                  .get();
+
+              if (snapshot.exists && snapshot.value != null) {
+                try {
+                  final Map<dynamic, dynamic> allNodeMap =
+                      snapshot.value as Map;
+
+                  _userNodeIdOwned = allNodeMap.keys
+                      .map((key) => key.toString())
+                      .toList();
+                } catch (e) {
+                  print('Lỗi $e');
+                }
+              }
+              setState(() {
+                _isLoadedListNodeId = true;
+              });
+            } else {
+              setState(() {
+                // Lọc ra các key có giá trị true (node_1, node_2...)
+                final Map<dynamic, dynamic> userOwnedNodesMap =
+                    userData['nodes_owned'] as Map<dynamic, dynamic>;
+                _userNodeIdOwned = userOwnedNodesMap.entries
+                    .where((entry) => entry.value == true)
+                    .map((entry) => entry.key.toString())
+                    .toList();
+                _isLoadedListNodeId = true;
+              });
+            }
           }
         });
   }
@@ -90,6 +120,7 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   @override
   void dispose() {
     _networkSubscription.cancel();
+    _userNodesSubscription.cancel();
     delayOfflineTimer?.cancel();
     _isOnline.dispose();
     super.dispose();
