@@ -36,20 +36,25 @@ class MyHomeScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
 
-            FutureBuilder<String>(
-              future: FirebaseAccountController.userRole(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final role = snapshot.data ?? 'user';
-                  return TextFormField(
-                    readOnly: true,
-                    initialValue: role == 'admin'
-                        ? 'Quản trị viên'
-                        : 'Người dùng',
-                  );
-                }
-                return SizedBox.shrink();
-              },
+            // FutureBuilder<String>(
+            //   future: FirebaseAccountController.userRole(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.hasData) {
+            //       final role = snapshot.data ?? 'user';
+            //       return TextFormField(
+            //         readOnly: true,
+            //         initialValue: role == 'admin'
+            //             ? 'Quản trị viên'
+            //             : 'Người dùng',
+            //       );
+            //     }
+            //     return SizedBox.shrink();
+            //   },
+            // ),
+
+            TextFormField(
+              readOnly: true,
+              initialValue: FirebaseAccountController.userRoleCached,
             ),
 
             SizedBox(height: 10),

@@ -18,7 +18,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   //theo dõi có mạng hay không
   final ValueNotifier<bool> _isOnline = ValueNotifier(true);
   Timer? delayOfflineTimer;
-  late Query _nodesQuery;
 
   List<String> _userNodeIdOwned = [];
   bool _isLoadedListNodeId = false;
@@ -58,7 +57,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                       .map((key) => key.toString())
                       .toList();
                 } catch (e) {
-                  print('Lỗi $e');
                 }
               }
               setState(() {
