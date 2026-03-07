@@ -13,4 +13,22 @@ class FirebaseAccountController {
     }
     return '';
   }
+
+
+  static String userDisplayNameCached = '';
+  static Future<String> userDisplayName() async {
+    final String userUID = FirebaseAuth.instance.currentUser!.uid;
+    final DataSnapshot snapshot = await FirebaseDatabase.instance.ref('users_list/$userUID/display_name').get();
+
+    if (snapshot.exists && snapshot.value != null) {
+      userDisplayNameCached = snapshot.value.toString();
+      return userDisplayNameCached;
+    }
+    return '';
+  }
+
+  static Future<void> setUserDisplayName(String newDisplayName) async {
+    final String userUID = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseDatabase.instance.ref('users_list/$userUID/display_name').set(newDisplayName);
+  }
 }
