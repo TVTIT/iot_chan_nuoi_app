@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 
 import '../main.dart';
 
-class MyHomeScreen extends StatelessWidget {
-  const MyHomeScreen({super.key});
+class MyProfileScreen extends StatelessWidget {
+  const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,9 @@ class MyHomeScreen extends StatelessWidget {
 
             TextFormField(
               readOnly: true,
-              initialValue: FirebaseAccountController.userRoleCached,
+              initialValue: FirebaseAccountController.userRoleCached == 'admin'
+                  ? 'Quản trị viên'
+                  : 'Người dùng',
             ),
 
             SizedBox(height: 10),

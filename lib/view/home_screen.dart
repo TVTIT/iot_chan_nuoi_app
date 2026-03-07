@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final userRole = snapshot.data ?? 'user';
           List<Widget> indexedStackChildren = [
             const ListNodesScreen(),
-            const MyHomeScreen(),
+            const MyProfileScreen(),
           ];
           List<BottomNavigationBarItem> bottomItems = [
             const BottomNavigationBarItem(
