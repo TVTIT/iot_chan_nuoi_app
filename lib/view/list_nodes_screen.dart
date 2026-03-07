@@ -57,20 +57,23 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                       .map((key) => key.toString())
                       .toList();
                 } catch (e) {
+                  return;
                 }
               }
               setState(() {
                 _isLoadedListNodeId = true;
               });
             } else {
-              setState(() {
-                // Lọc ra các key có giá trị true (node_1, node_2...)
+              try {
                 final Map<dynamic, dynamic> userOwnedNodesMap =
                     userData['nodes_owned'] as Map<dynamic, dynamic>;
+                // Lọc ra các key có giá trị true (node_1, node_2...)
                 _userNodeIdOwned = userOwnedNodesMap.entries
                     .where((entry) => entry.value == true)
                     .map((entry) => entry.key.toString())
                     .toList();
+              } catch (e) {}
+              setState(() {
                 _isLoadedListNodeId = true;
               });
             }
