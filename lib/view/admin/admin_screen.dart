@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/model/users_model.dart';
+import 'package:iot_chan_nuoi_app/view/admin/create_user_screen.dart';
 import 'package:iot_chan_nuoi_app/view/admin/edit_user_screen.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -40,7 +41,15 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Danh sách người dùng'),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(builder: (context) => CreateUserScreen()),
+            ),
+            icon: Icon(Icons.add),
+          ),
+        ],
       ),
 
       body: _isLoading

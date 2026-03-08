@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:iot_chan_nuoi_app/model/users_model.dart' as UserModel;
 
 class FirebaseAccountController {
   static const userRolesMap = {"user": "Người dùng", "admin": "Quản trị viên"};
@@ -80,5 +82,51 @@ class FirebaseAccountController {
     await FirebaseDatabase.instance
         .ref('users_list/$userId/nodes_owned')
         .set(nodesUserOwnedMap);
+  }
+
+  //Đặt trong try catch khi dùng
+  static Future<UserModel.User> createNewUserAsAdmin({
+    required String email,
+    required String password,
+    required String displayName,
+    required String role,
+    required Map<String, bool> nodesOwned,
+  }) async {
+    String newUserId = '';
+    FirebaseApp? tempApp;
+    try {
+      //Tạo app phụ để tạo tài khoản mới
+      tempApp = await Firebase.initializeApp(
+        name: 'TemporaryApp', // Tên tùy ý
+        options: Firebase.app().options, // Copy cấu hình của app chính
+      );
+
+      UserCredential userCredential = await FirebaseAuth.instanceFor(
+        app: tempApp,
+      ).createUserWithEmailAndPassword(email: email, password: password);
+      newUserId = userCredential.user!.uid;
+
+      //Xoá app phụ
+      await tempApp.delete();
+
+      final newUserData = {
+        "display_name": displayName,
+        "nodes_owned": nodesOwned,
+        "role": role,
+      };
+
+      await FirebaseDatabase.instance
+          .ref('users_list/$newUserId')
+          .set(newUserData);
+    } on FirebaseAuthException {
+      tempApp?.delete();
+      rethrow;
+    }
+    return UserModel.User(
+      id: newUserId,
+      displayName: displayName,
+      role: role,
+      nodesOwned: nodesOwned,
+    );
   }
 }
