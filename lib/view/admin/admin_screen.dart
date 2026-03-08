@@ -62,13 +62,16 @@ class _AdminScreenState extends State<AdminScreen> {
                       snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
                   List<User> listUsers = [];
                   rawData.forEach((key, value) {
-                    final node = User.fromEntry(key.toString(), value as Map);
-                    listUsers.add(node);
+                    final user = User.fromEntry(key.toString(), value as Map);
+                    listUsers.add(user);
                   });
                   return ListView.builder(
                     itemCount: listUsers.length,
                     itemBuilder: (context, index) {
                       final user = listUsers[index];
+                      int nodesOwnedNum = user.nodesOwned.entries
+                          .where((entry) => entry.value == true)
+                          .length;
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
@@ -83,7 +86,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                 "Vai trò: ${FirebaseAccountController.userRolesMap[user.role] ?? 'Người dùng'}",
                               ),
                               Text(
-                                "Sở hữu: ${user.nodesOwned.keys.length} node",
+                                "Sở hữu: $nodesOwnedNum node",
                               ),
                               Text(
                                 "ID người dùng: ${user.id.substring(0, 10)}...",
