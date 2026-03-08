@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/model/users_model.dart';
 
+
 class EditUserScreen extends StatefulWidget {
   EditUserScreen({super.key, required this.user, required this.allNodesMap});
 
@@ -13,14 +14,11 @@ class EditUserScreen extends StatefulWidget {
 
   @override
   State<EditUserScreen> createState() =>
-      _EditUserScreenState(user: user, allNodesMap: allNodesMap);
+      _EditUserScreenState();
 }
 
 class _EditUserScreenState extends State<EditUserScreen> {
-  _EditUserScreenState({required this.user, required this.allNodesMap});
-
-  final User user;
-  Map<dynamic, dynamic> allNodesMap;
+  _EditUserScreenState();
   //late Map<dynamic, dynamic> _allNodesUserOwned;
 
   final _formKey = GlobalKey<FormState>();
@@ -42,7 +40,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
             children: [
               Text('Tên', style: TextStyle(fontWeight: FontWeight.bold)),
               TextFormField(
-                initialValue: user.displayName,
+                initialValue: widget.user.displayName,
                 decoration: InputDecoration(hintText: 'Nhập tên người dùng'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -50,7 +48,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                   }
                   return null;
                 },
-                onSaved: (newValue) => user.displayName = newValue!,
+                onSaved: (newValue) => widget.user.displayName = newValue!,
               ),
 
               SizedBox(height: 10),
@@ -65,9 +63,9 @@ class _EditUserScreenState extends State<EditUserScreen> {
                       ),
                     )
                     .toList(),
-                initialValue: user.role,
+                initialValue: widget.user.role,
                 onChanged: (_) {},
-                onSaved: (newValue) => user.role = newValue!,
+                onSaved: (newValue) => widget.user.role = newValue!,
               ),
 
               SizedBox(height: 10),
@@ -79,11 +77,11 @@ class _EditUserScreenState extends State<EditUserScreen> {
 
               TextFormField(
                 readOnly: true,
-                initialValue: user.id,
+                initialValue: widget.user.id,
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: user.id));
+                      await Clipboard.setData(ClipboardData(text: widget.user.id));
                       const snackBar = SnackBar(
                         content: Text('Đã copy ID người dùng vào clipboard'),
                       );
@@ -97,18 +95,18 @@ class _EditUserScreenState extends State<EditUserScreen> {
               SizedBox(height: 10),
 
               FormField<Map<dynamic, dynamic>>(
-                initialValue: user.nodesOwned,
+                initialValue: widget.user.nodesOwned,
                 builder: (state) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: allNodesMap.keys
+                    children: widget.allNodesMap.keys
                         .map(
                           (key) => CheckboxListTile(
-                            title: Text(allNodesMap[key]['name']),
+                            title: Text(widget.allNodesMap[key]['name']),
                             value: state.value![key] ?? false,
                             onChanged: (value) {
-                              user.nodesOwned[key] = value;
-                              state.didChange(user.nodesOwned);
+                              widget.user.nodesOwned[key] = value;
+                              state.didChange(widget.user.nodesOwned);
                             },
                           ),
                         )
@@ -124,8 +122,8 @@ class _EditUserScreenState extends State<EditUserScreen> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     FirebaseDatabase.instance
-                        .ref('users_list/${user.id}')
-                        .set(user.toMap());
+                        .ref('users_list/${widget.user.id}')
+                        .set(widget.user.toMap());
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: const Text('Đã lưu thông tin người dùng'),
