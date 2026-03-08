@@ -12,11 +12,14 @@ class User {
   });
 
   factory User.fromEntry(String key, Map<dynamic, dynamic> value) {
-    Map<dynamic, dynamic> nodes_owned = value['nodes_owned'] as Map;
+    Map<dynamic, dynamic> nodesOwned = {};
+    if (value['nodes_owned'] != null) {
+      nodesOwned = value['nodes_owned'] as Map;
+    }
     return User(
       id: key,
       displayName: value['display_name'],
-      nodesOwned: nodes_owned,
+      nodesOwned: nodesOwned,
       role: value['role'],
     );
   }
