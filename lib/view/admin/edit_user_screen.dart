@@ -58,7 +58,10 @@ class _EditUserScreenState extends State<EditUserScreen> {
                     .map(
                       (entry) => DropdownMenuItem(
                         value: entry.key,
-                        child: Text(entry.value),
+                        child: Text(
+                          entry.value,
+                          style: TextStyle(fontWeight: FontWeight.normal),
+                        ),
                       ),
                     )
                     .toList(),

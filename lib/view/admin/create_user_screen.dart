@@ -136,7 +136,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                           .map(
                             (entry) => DropdownMenuItem(
                               value: entry.key,
-                              child: Text(entry.value),
+                              child: Text(
+                                entry.value,
+                                style: TextStyle(fontWeight: FontWeight.normal),
+                              ),
                             ),
                           )
                           .toList(),
