@@ -37,8 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ];
           if (userRole == 'admin') {
-            indexedStackChildren.add(const AdminScreen());
-            bottomItems.add(
+            indexedStackChildren.insert(1, const AdminScreen());
+            bottomItems.insert(
+              1,
               const BottomNavigationBarItem(
                 icon: Icon(Icons.admin_panel_settings),
                 label: 'Quản lý',
@@ -65,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }
-        return Scaffold(body: Center(child: CircularProgressIndicator(),));
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }
