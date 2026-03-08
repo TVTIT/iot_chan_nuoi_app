@@ -12,7 +12,8 @@ class EditUserScreen extends StatefulWidget {
   Map<dynamic, dynamic> allNodesMap;
 
   @override
-  State<EditUserScreen> createState() => _EditUserScreenState(user: user, allNodesMap: allNodesMap);
+  State<EditUserScreen> createState() =>
+      _EditUserScreenState(user: user, allNodesMap: allNodesMap);
 }
 
 class _EditUserScreenState extends State<EditUserScreen> {
@@ -23,7 +24,6 @@ class _EditUserScreenState extends State<EditUserScreen> {
   //late Map<dynamic, dynamic> _allNodesUserOwned;
 
   final _formKey = GlobalKey<FormState>();
-  bool _isLoaded = false;
 
   @override
   void initState() {
@@ -35,123 +35,111 @@ class _EditUserScreenState extends State<EditUserScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Chỉnh sửa người dùng')),
       body: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    Text('Tên', style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextFormField(
-                      initialValue: user.displayName,
-                      decoration: InputDecoration(
-                        hintText: 'Nhập tên người dùng',
+        padding: const EdgeInsets.all(15.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              Text('Tên', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextFormField(
+                initialValue: user.displayName,
+                decoration: InputDecoration(hintText: 'Nhập tên người dùng'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Tên không được bỏ trống';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => user.displayName = newValue!,
+              ),
+
+              SizedBox(height: 10),
+
+              Text('Vai trò', style: TextStyle(fontWeight: FontWeight.bold)),
+              DropdownButtonFormField(
+                items: FirebaseAccountController.userRolesMap.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Tên không được bỏ trống';
-                        }
-                        return null;
-                      },
-                      onSaved: (newValue) => user.displayName = newValue!,
-                    ),
+                    )
+                    .toList(),
+                initialValue: user.role,
+                onChanged: (_) {},
+                onSaved: (newValue) => user.role = newValue!,
+              ),
 
-                    SizedBox(height: 10),
+              SizedBox(height: 10),
 
-                    Text(
-                      'Vai trò',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButtonFormField(
-                      items: FirebaseAccountController.userRolesMap.entries
-                          .map(
-                            (entry) => DropdownMenuItem(
-                              value: entry.key,
-                              child: Text(entry.value),
-                            ),
-                          )
-                          .toList(),
-                      initialValue: user.role,
-                      onChanged: (_) {},
-                      onSaved: (newValue) => user.role = newValue!,
-                    ),
+              const Text(
+                'ID người dùng',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
 
-                    SizedBox(height: 10),
-
-                    const Text(
-                      'ID người dùng',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-
-                    TextFormField(
-                      readOnly: true,
-                      initialValue: user.id,
-                      decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          onPressed: () async {
-                            await Clipboard.setData(
-                              ClipboardData(text: user.id),
-                            );
-                            const snackBar = SnackBar(
-                              content: Text(
-                                'Đã copy ID người dùng vào clipboard',
-                              ),
-                            );
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(snackBar);
-                          },
-                          icon: Icon(Icons.copy),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 10,),
-
-                    
-                    FormField<Map<dynamic, dynamic>>(
-                      initialValue: user.nodesOwned,
-                      builder: (state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: 
-                            allNodesMap.keys.map((key) => CheckboxListTile(
-                              title: Text(allNodesMap[key]['name']),
-                              value: state.value![key] ?? false,
-                              onChanged: (value) {
-                                user.nodesOwned?[key] = value;
-                                state.didChange(user.nodesOwned);
-                              },
-                            )).toList(),
-
-
-                        );
-                    }),
-
-                    SizedBox(height: 40),
-
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          FirebaseDatabase.instance
-                              .ref('users_list/${user.id}')
-                              .set(user.toMap());
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: const Text(
-                                'Đã lưu thông tin người dùng',
-                              ),
-                            ),
-                          );
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text('Lưu lại'),
-                    ),
-                  ],
+              TextFormField(
+                readOnly: true,
+                initialValue: user.id,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: user.id));
+                      const snackBar = SnackBar(
+                        content: Text('Đã copy ID người dùng vào clipboard'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    },
+                    icon: Icon(Icons.copy),
+                  ),
                 ),
               ),
-            ),
+
+              SizedBox(height: 10),
+
+              FormField<Map<dynamic, dynamic>>(
+                initialValue: user.nodesOwned,
+                builder: (state) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: allNodesMap.keys
+                        .map(
+                          (key) => CheckboxListTile(
+                            title: Text(allNodesMap[key]['name']),
+                            value: state.value![key] ?? false,
+                            onChanged: (value) {
+                              user.nodesOwned[key] = value;
+                              state.didChange(user.nodesOwned);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
+              ),
+
+              SizedBox(height: 40),
+
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    FirebaseDatabase.instance
+                        .ref('users_list/${user.id}')
+                        .set(user.toMap());
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: const Text('Đã lưu thông tin người dùng'),
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text('Lưu lại'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
