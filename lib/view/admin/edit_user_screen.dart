@@ -118,12 +118,10 @@ class _EditUserScreenState extends State<EditUserScreen> {
               SizedBox(height: 40),
 
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    FirebaseDatabase.instance
-                        .ref('users_list/${widget.user.id}')
-                        .set(widget.user.toMap());
+                    await FirebaseAccountController.setUserData(widget.user);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: const Text('Đã lưu thông tin người dùng'),

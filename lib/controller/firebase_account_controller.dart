@@ -84,6 +84,12 @@ class FirebaseAccountController {
         .set(nodesUserOwnedMap);
   }
 
+  static Future<void> setUserData(UserModel.User user) async {
+    await FirebaseDatabase.instance
+        .ref('users_list/${user.id}')
+        .set(user.toMap());
+  }
+
   //Đặt trong try catch khi dùng
   static Future<UserModel.User> createNewUserAsAdmin({
     required String email,
