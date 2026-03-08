@@ -9,7 +9,7 @@ import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart';
 
-import '../main.dart';
+import '../../main.dart';
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});

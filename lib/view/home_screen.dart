@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/view/admin/admin_screen.dart';
 import 'list_nodes_screen.dart';
-import 'profile_screen.dart';
+import 'profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
