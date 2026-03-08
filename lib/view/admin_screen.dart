@@ -73,6 +73,7 @@ class _AdminScreenState extends State<AdminScreen> {
                               Text(
                                 "Vai trò: ${user.role == 'admin' ? 'Quản trị viên' : 'Người dùng'}",
                               ),
+                              Text("Sở hữu: ${user.nodesOwned.keys.length} node"),
                               Text(
                                 "ID người dùng: ${user.id.substring(0, 10)}...",
                               ),
