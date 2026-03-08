@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/model/users_model.dart';
-import 'package:iot_chan_nuoi_app/view/edit_user_screen.dart';
+import 'package:iot_chan_nuoi_app/view/admin/edit_user_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
