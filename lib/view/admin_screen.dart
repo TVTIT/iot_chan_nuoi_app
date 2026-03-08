@@ -71,9 +71,11 @@ class _AdminScreenState extends State<AdminScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Vai trò: ${user.role == 'admin' ? 'Quản trị viên' : 'Người dùng'}",
+                                "Vai trò: ${FirebaseAccountController.userRolesMap[user.role] ?? 'Người dùng'}",
                               ),
-                              Text("Sở hữu: ${user.nodesOwned.keys.length} node"),
+                              Text(
+                                "Sở hữu: ${user.nodesOwned.keys.length} node",
+                              ),
                               Text(
                                 "ID người dùng: ${user.id.substring(0, 10)}...",
                               ),
@@ -82,7 +84,10 @@ class _AdminScreenState extends State<AdminScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (context) => EditUserScreen(user: user, allNodesMap: _allNodesMap,),
+                              builder: (context) => EditUserScreen(
+                                user: user,
+                                allNodesMap: _allNodesMap,
+                              ),
                             ),
                           ),
                         ),
