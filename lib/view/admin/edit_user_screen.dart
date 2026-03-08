@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/model/users_model.dart';
 
-
 class EditUserScreen extends StatefulWidget {
   EditUserScreen({super.key, required this.user, required this.allNodesMap});
 
@@ -13,8 +12,7 @@ class EditUserScreen extends StatefulWidget {
   Map<dynamic, dynamic> allNodesMap;
 
   @override
-  State<EditUserScreen> createState() =>
-      _EditUserScreenState();
+  State<EditUserScreen> createState() => _EditUserScreenState();
 }
 
 class _EditUserScreenState extends State<EditUserScreen> {
@@ -22,6 +20,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
   //late Map<dynamic, dynamic> _allNodesUserOwned;
 
   final _formKey = GlobalKey<FormState>();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -81,7 +80,9 @@ class _EditUserScreenState extends State<EditUserScreen> {
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: widget.user.id));
+                      await Clipboard.setData(
+                        ClipboardData(text: widget.user.id),
+                      );
                       const snackBar = SnackBar(
                         content: Text('Đã copy ID người dùng vào clipboard'),
                       );
@@ -121,16 +122,25 @@ class _EditUserScreenState extends State<EditUserScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    await FirebaseAccountController.setUserData(widget.user);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: const Text('Đã lưu thông tin người dùng'),
-                      ),
-                    );
-                    Navigator.pop(context);
+                    try {
+                      await FirebaseAccountController.setUserData(widget.user);
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: const Text('Đã lưu thông tin người dùng'),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    } catch (e) {}
                   }
                 },
-                child: Text('Lưu lại'),
+                child: _isSaving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : const Text('Lưu lại'),
               ),
             ],
           ),
