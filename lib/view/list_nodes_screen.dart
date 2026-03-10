@@ -44,9 +44,10 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
             final Map<dynamic, dynamic> userData =
                 event.snapshot.value as Map<dynamic, dynamic>;
             if (userData['role']?.toString() == 'admin') {
-              DataSnapshot snapshot = await FirebaseDatabase.instance
+              DatabaseEvent event = await FirebaseDatabase.instance
                   .ref('farm_monitor')
-                  .get();
+                  .once();
+              DataSnapshot snapshot = event.snapshot;
 
               if (snapshot.exists && snapshot.value != null) {
                 try {

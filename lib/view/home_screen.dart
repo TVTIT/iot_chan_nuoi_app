@@ -18,10 +18,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: FirebaseAccountController.userRole(),
+      future: FirebaseAccountController.getCurrentUserData(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final userRole = snapshot.data ?? 'user';
+        if (snapshot.hasData && snapshot.data != null) {
+          final userDataMap = snapshot.data as Map;
+          final userRole = userDataMap['role'] ?? 'user';
           List<Widget> indexedStackChildren = [
             const ListNodesScreen(),
             const MyProfileScreen(),

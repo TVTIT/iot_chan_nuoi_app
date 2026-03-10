@@ -6,68 +6,42 @@ import 'package:iot_chan_nuoi_app/model/users_model.dart' as UserModel;
 class FirebaseAccountController {
   static const userRolesMap = {"user": "Người dùng", "admin": "Quản trị viên"};
 
-  static String userRoleCached = '';
-  static Future<String> userRole() async {
-    final String userUID = FirebaseAuth.instance.currentUser!.uid;
-    final DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('users_list/$userUID/role')
-        .get();
+  static Map<dynamic, dynamic> userDataCached = {};
+  static Future<Map<dynamic, dynamic>> getCurrentUserData() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final DatabaseEvent event = await FirebaseDatabase.instance
+        .ref('users_list')
+        .child(userId)
+        .once();
+    final DataSnapshot snapshot = event.snapshot;
 
     if (snapshot.exists && snapshot.value != null) {
-      userRoleCached = snapshot.value.toString();
-      return userRoleCached;
+      userDataCached = snapshot.value as Map;
+      return userDataCached;
     }
-    return '';
-  }
-
-  static String userDisplayNameCached = '';
-  static Future<String> userDisplayName() async {
-    final String userUID = FirebaseAuth.instance.currentUser!.uid;
-    final DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('users_list/$userUID/display_name')
-        .get();
-
-    if (snapshot.exists && snapshot.value != null) {
-      userDisplayNameCached = snapshot.value.toString();
-      return userDisplayNameCached;
-    }
-    return '';
+    return {};
   }
 
   static Future<void> setUserDisplayName(String newDisplayName) async {
-    final String userUID = FirebaseAuth.instance.currentUser!.uid;
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseDatabase.instance
-        .ref('users_list/$userUID/display_name')
+        .ref('users_list')
+        .child(userId)
+        .child('display_name')
         .set(newDisplayName);
   }
 
   static Future<Map<dynamic, dynamic>> getAllNodesMap() async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
+    DatabaseEvent event = await FirebaseDatabase.instance
         .ref('farm_monitor')
-        .get();
+        .once();
+    final DataSnapshot snapshot = event.snapshot;
+
 
     if (snapshot.exists && snapshot.value != null) {
       try {
         final Map<dynamic, dynamic> allNodeMap = snapshot.value as Map;
         return allNodeMap;
-      } catch (e) {
-        return {};
-      }
-    }
-    return {};
-  }
-
-  static Future<Map<dynamic, dynamic>> getAllNodesUserOwnedMap(
-    String userId,
-  ) async {
-    DataSnapshot snapshot = await FirebaseDatabase.instance
-        .ref('users_list/$userId/nodes_owned')
-        .get();
-
-    if (snapshot.exists && snapshot.value != null) {
-      try {
-        final Map<dynamic, dynamic> userOwnedNodesMap = snapshot.value as Map;
-        return userOwnedNodesMap;
       } catch (e) {
         return {};
       }

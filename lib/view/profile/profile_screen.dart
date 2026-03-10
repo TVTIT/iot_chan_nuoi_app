@@ -40,7 +40,7 @@ class MyProfileScreen extends StatelessWidget {
 
             TextFormField(
               readOnly: true,
-              initialValue: FirebaseAccountController.userRoleCached == 'admin'
+              initialValue: FirebaseAccountController.userDataCached['role'] == 'admin'
                   ? 'Quản trị viên'
                   : 'Người dùng',
             ),
