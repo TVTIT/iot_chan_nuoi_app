@@ -150,6 +150,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 
                     SizedBox(height: 10),
 
+                    Text(
+                      'Node sở hữu',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     FormField<Map<dynamic, dynamic>>(
                       initialValue: _nodesOwned,
                       builder: (state) {

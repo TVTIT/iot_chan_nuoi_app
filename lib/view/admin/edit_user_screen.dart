@@ -98,6 +98,10 @@ class _EditUserScreenState extends State<EditUserScreen> {
 
               SizedBox(height: 10),
 
+              Text(
+                'Node sở hữu',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               FormField<Map<dynamic, dynamic>>(
                 initialValue: widget.user.nodesOwned,
                 builder: (state) {
