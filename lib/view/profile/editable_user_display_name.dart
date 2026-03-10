@@ -49,8 +49,8 @@ class _MyEditableUserDisplayNameState extends State<MyEditableUserDisplayName> {
     }
   }
 
-  Future<void> getUserDisplayName() async {
-    String result = await FirebaseAccountController.userDisplayName();
+  Future<void> _getUserDisplayName() async {
+    String result = FirebaseAccountController.userDataCached['display_name'] ?? 'Người dùng';
 
     if (!mounted) {
       return;
@@ -65,8 +65,8 @@ class _MyEditableUserDisplayNameState extends State<MyEditableUserDisplayName> {
   @override
   void initState() {
     super.initState();
-    getUserDisplayName();
     ctrl = TextEditingController();
+    _getUserDisplayName();
   }
 
   @override
