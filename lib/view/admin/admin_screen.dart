@@ -40,16 +40,17 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Text('Danh sách người dùng'),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(builder: (context) => CreateUserScreen()),
-            ),
-            icon: Icon(Icons.add),
-          ),
-        ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(builder: (context) => CreateUserScreen()),
+        ),
+        shape: const CircleBorder(),
+        child: Icon(Icons.add),
       ),
 
       body: _isLoading
@@ -85,9 +86,7 @@ class _AdminScreenState extends State<AdminScreen> {
                               Text(
                                 "Vai trò: ${FirebaseAccountController.userRolesMap[user.role] ?? 'Người dùng'}",
                               ),
-                              Text(
-                                "Sở hữu: $nodesOwnedNum node",
-                              ),
+                              Text("Sở hữu: $nodesOwnedNum node"),
                               Text(
                                 "ID người dùng: ${user.id.substring(0, 10)}...",
                               ),
