@@ -5,6 +5,9 @@
         android:label="IOT chăn nuôi"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <!-- Add custom icon to the notifications -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_stat_sanslab_logo" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
