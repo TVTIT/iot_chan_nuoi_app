@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import '../model/sensors_model.dart';
 import '../main.dart';
 
@@ -21,7 +22,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
 
   List<String> _userNodeIdOwned = [];
   bool _isLoadedListNodeId = false;
-  late StreamSubscription _userNodesSubscription;
   late StreamSubscription<List<ConnectivityResult>> _networkSubscription;
 
   @override
@@ -94,7 +94,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
   @override
   void dispose() {
     _networkSubscription.cancel();
-    _userNodesSubscription.cancel();
     delayOfflineTimer?.cancel();
     _isOnline.dispose();
     super.dispose();

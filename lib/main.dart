@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/view/login_screen.dart';
 import 'firebase_options.dart';
 import 'model/vi_localization.dart';
@@ -31,6 +33,10 @@ void main() async {
   );
 
   await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+
+  await FirebaseMessaging.instance.requestPermission(provisional: true, alert: true, badge: true, sound: true);
+  await FirebaseAccountController.getNotificationToken();
+  
 
   LoginScreen.localizeError();
 

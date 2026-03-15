@@ -14,14 +14,29 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //lưu vị trí các tab
   int _currentIndex = 0;
+  late Future<Map<dynamic, dynamic>> _userDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userDataFuture = FirebaseAccountController.getCurrentUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: FirebaseAccountController.getCurrentUserData(),
+      future: _userDataFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final userDataMap = snapshot.data as Map;
+
+          final userDevices = userDataMap['devices_list'] ?? {};
+          final bool isDeviceOnList = userDevices[FirebaseAccountController.notificationTokenCached] ?? false;
+
+          if (!isDeviceOnList) {
+            FirebaseAccountController.updateUserDeviceToken();
+          }
+
           final userRole = userDataMap['role'] ?? 'user';
           List<Widget> indexedStackChildren = [
             const ListNodesScreen(),

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:iot_chan_nuoi_app/model/users_model.dart' as UserModel;
 
 class FirebaseAccountController {
@@ -37,7 +38,6 @@ class FirebaseAccountController {
         .once();
     final DataSnapshot snapshot = event.snapshot;
 
-
     if (snapshot.exists && snapshot.value != null) {
       try {
         final Map<dynamic, dynamic> allNodeMap = snapshot.value as Map;
@@ -65,7 +65,6 @@ class FirebaseAccountController {
             .where((entry) => entry.value == true)
             .map((entry) => entry.key.toString())
             .toList();
-        ;
       } catch (e) {
         return [];
       }
@@ -132,5 +131,38 @@ class FirebaseAccountController {
       role: role,
       nodesOwned: nodesOwned,
     );
+  }
+
+  static String notificationTokenCached = "";
+  static Future<void> getNotificationToken() async {
+    notificationTokenCached = await FirebaseMessaging.instance.getToken() ?? "";
+    print('Notification token: $notificationTokenCached');
+  }
+
+  static Future<void> updateUserDeviceToken() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final updateData = {notificationTokenCached: true};
+    await FirebaseDatabase.instance
+        .ref('users_list')
+        .child(userId)
+        .child('devices_list')
+        .update(updateData);
+
+    (userDataCached['devices_list'] ??= {})[notificationTokenCached] = true;
+  }
+
+  static Future<void> removeUserDeviceToken() async {
+    if (notificationTokenCached == "") {
+      return;
+    }
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    try {
+      await FirebaseDatabase.instance
+          .ref('users_list')
+          .child(userId)
+          .child('devices_list')
+          .child(notificationTokenCached)
+          .remove();
+    } catch (e) {}
   }
 }

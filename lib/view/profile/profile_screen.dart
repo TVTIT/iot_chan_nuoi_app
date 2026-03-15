@@ -40,7 +40,8 @@ class MyProfileScreen extends StatelessWidget {
 
             TextFormField(
               readOnly: true,
-              initialValue: FirebaseAccountController.userDataCached['role'] == 'admin'
+              initialValue:
+                  FirebaseAccountController.userDataCached['role'] == 'admin'
                   ? 'Quản trị viên'
                   : 'Người dùng',
             ),
@@ -71,7 +72,18 @@ class MyProfileScreen extends StatelessWidget {
 
             SizedBox(height: 40),
 
-            SignOutButton(auth: FirebaseAuth.instance),
+            ElevatedButton.icon(
+              onPressed: () async {
+                FirebaseAccountController.userDataCached = {};
+                await FirebaseAccountController.removeUserDeviceToken();
+                await FirebaseUIAuth.signOut(
+                  context: context,
+                  auth: FirebaseAuth.instance,
+                );
+              },
+              icon: Icon(Icons.logout),
+              label: Text('Đăng xuất'),
+            ),
 
             SizedBox(height: 80),
 
