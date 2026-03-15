@@ -49,6 +49,30 @@ class FirebaseAccountController {
     return {};
   }
 
+  static Future<List<String>> getUserNodesOwned() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    DatabaseEvent event = await FirebaseDatabase.instance
+        .ref('users_list')
+        .child(userId)
+        .child('nodes_owned')
+        .once();
+    final DataSnapshot snapshot = event.snapshot;
+
+    if (snapshot.exists && snapshot.value != null) {
+      try {
+        final Map<dynamic, dynamic> nodesOwnedMap = snapshot.value as Map;
+        return nodesOwnedMap.entries
+            .where((entry) => entry.value == true)
+            .map((entry) => entry.key.toString())
+            .toList();
+        ;
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }
+
   static Future<void> setUserNodesOwned(
     Map<String, bool> nodesUserOwnedMap,
     String userId,

@@ -35,51 +35,23 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
     setState(() {
       _isLoadedListNodeId = false;
     });
-    final String userUid = FirebaseAuth.instance.currentUser!.uid;
-    _userNodesSubscription = FirebaseDatabase.instance
-        .ref('users_list/$userUid')
-        .onValue
-        .listen((event) async {
-          if (event.snapshot.value != null) {
-            final Map<dynamic, dynamic> userData =
-                event.snapshot.value as Map<dynamic, dynamic>;
-            if (userData['role']?.toString() == 'admin') {
-              DatabaseEvent event = await FirebaseDatabase.instance
-                  .ref('farm_monitor')
-                  .once();
-              DataSnapshot snapshot = event.snapshot;
+    if (FirebaseAccountController.userDataCached['role']?.toString() ==
+        'admin') {
+      Map<dynamic, dynamic> allNodesMap =
+          await FirebaseAccountController.getAllNodesMap();
 
-              if (snapshot.exists && snapshot.value != null) {
-                try {
-                  final Map<dynamic, dynamic> allNodeMap =
-                      snapshot.value as Map;
+      _userNodeIdOwned = allNodesMap.keys.map((key) => key.toString()).toList();
 
-                  _userNodeIdOwned = allNodeMap.keys
-                      .map((key) => key.toString())
-                      .toList();
-                } catch (e) {
-                  return;
-                }
-              }
-              setState(() {
-                _isLoadedListNodeId = true;
-              });
-            } else {
-              try {
-                final Map<dynamic, dynamic> userOwnedNodesMap =
-                    userData['nodes_owned'] as Map<dynamic, dynamic>;
-                // Lọc ra các key có giá trị true (node_1, node_2...)
-                _userNodeIdOwned = userOwnedNodesMap.entries
-                    .where((entry) => entry.value == true)
-                    .map((entry) => entry.key.toString())
-                    .toList();
-              } catch (e) {}
-              setState(() {
-                _isLoadedListNodeId = true;
-              });
-            }
-          }
-        });
+      setState(() {
+        _isLoadedListNodeId = true;
+      });
+    } else {
+      _userNodeIdOwned = await FirebaseAccountController.getUserNodesOwned();
+
+      setState(() {
+        _isLoadedListNodeId = true;
+      });
+    }
   }
 
   void _khoiTaoLangNgheMang() {
