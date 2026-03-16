@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iot_chan_nuoi_app/controller/firebase_account_controller.dart';
 import 'package:iot_chan_nuoi_app/view/admin/admin_screen.dart';
@@ -30,11 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
         if (snapshot.hasData && snapshot.data != null) {
           final userDataMap = snapshot.data as Map;
 
-          final userDevices = userDataMap['devices_list'] ?? {};
-          final bool isDeviceOnList = userDevices[FirebaseAccountController.notificationTokenCached] ?? false;
+          if (Platform.isAndroid ||
+              FirebaseAccountController.notificationTokenCached.isNotEmpty) {
+            final userDevices = userDataMap['devices_list'] ?? {};
+            final bool isDeviceOnList =
+                userDevices[FirebaseAccountController
+                    .notificationTokenCached] ??
+                false;
 
-          if (!isDeviceOnList) {
-            FirebaseAccountController.updateUserDeviceToken();
+            if (!isDeviceOnList) {
+              FirebaseAccountController.updateUserDeviceToken();
+            }
           }
 
           final userRole = userDataMap['role'] ?? 'user';

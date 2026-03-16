@@ -142,6 +142,9 @@ class FirebaseAccountController {
   }
 
   static Future<void> updateUserDeviceToken() async {
+    if (notificationTokenCached.isEmpty) {
+      return;
+    }
     final String userId = FirebaseAuth.instance.currentUser!.uid;
     final updateData = {notificationTokenCached: true};
     await FirebaseDatabase.instance
@@ -154,7 +157,7 @@ class FirebaseAccountController {
   }
 
   static Future<void> removeUserDeviceToken() async {
-    if (notificationTokenCached == "") {
+    if (notificationTokenCached.isEmpty) {
       return;
     }
     final String userId = FirebaseAuth.instance.currentUser!.uid;

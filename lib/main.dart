@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -18,25 +19,16 @@ void main() async {
   //Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  //Cấu hình thông báo
-  const AndroidInitializationSettings androidSettings =
-      AndroidInitializationSettings('@mipmap/launcher_icon');
-
-  const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-  );
-
-  final InitializationSettings initializationSettings = InitializationSettings(
-    android: androidSettings,
-    iOS: iosSettings,
-  );
-
-  await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
-
-  await FirebaseMessaging.instance.requestPermission(provisional: true, alert: true, badge: true, sound: true);
-  await FirebaseAccountController.getNotificationToken();
-  
+  //Cấu hình thông báo nếu là android
+  if (Platform.isAndroid) {
+    await FirebaseMessaging.instance.requestPermission(
+      provisional: true,
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    await FirebaseAccountController.getNotificationToken();
+  }
 
   LoginScreen.localizeError();
 
