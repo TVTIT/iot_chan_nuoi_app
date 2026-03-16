@@ -32,6 +32,7 @@ class FirebaseAccountController {
         .set(newDisplayName);
   }
 
+  static Map<dynamic, dynamic> allNodesMapCached = {};
   static Future<Map<dynamic, dynamic>> getAllNodesMap() async {
     DatabaseEvent event = await FirebaseDatabase.instance
         .ref('farm_monitor')
@@ -41,6 +42,7 @@ class FirebaseAccountController {
     if (snapshot.exists && snapshot.value != null) {
       try {
         final Map<dynamic, dynamic> allNodeMap = snapshot.value as Map;
+        allNodesMapCached = allNodeMap;
         return allNodeMap;
       } catch (e) {
         return {};

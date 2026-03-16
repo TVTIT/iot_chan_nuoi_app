@@ -17,23 +17,9 @@ class _AdminScreenState extends State<AdminScreen> {
     'users_list',
   );
 
-  late Map<dynamic, dynamic> _allNodesMap;
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _getDataRequired();
-  }
-
-  Future<void> _getDataRequired() async {
-    setState(() {
-      _isLoading = true;
-    });
-    _allNodesMap = await FirebaseAccountController.getAllNodesMap();
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -53,9 +39,7 @@ class _AdminScreenState extends State<AdminScreen> {
         child: Icon(Icons.add),
       ),
 
-      body: _isLoading
-          ? Center(child: const CircularProgressIndicator())
-          : StreamBuilder(
+      body: StreamBuilder(
               stream: databaseRef.onValue,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
@@ -96,8 +80,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             context,
                             MaterialPageRoute<void>(
                               builder: (context) => EditUserScreen(
-                                user: user,
-                                allNodesMap: _allNodesMap,
+                                user: user
                               ),
                             ),
                           ),
