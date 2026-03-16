@@ -174,7 +174,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
                         nodeId,
                         snapshot.data!.snapshot.value as Map,
                       );
-                      checkAndShowNotification(sensor);
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
@@ -207,41 +206,6 @@ class _ListNodesScreenState extends State<ListNodesScreen> {
               },
             ),
     );
-  }
-
-  Future<void> checkAndShowNotification(FarmNode node) async {
-    if (node.temperature > 40 && node.temperature < 100) {
-      const AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-            'iot_chan_nuoi_alert',
-            'Cảnh báo nhiệt độ quá ngưỡng',
-            channelDescription:
-                'Nhận cảnh báo khẩn cấp khi nhiệt độ vượt ngưỡng an toàn',
-            importance: Importance.max,
-            priority: Priority.high,
-            icon: 'ic_stat_sanslab_logo',
-            ticker: 'Có cảnh báo chuồng chăn nuôi',
-          );
-      const DarwinNotificationDetails iosNotificationDetails =
-          DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          );
-      const NotificationDetails notificationDetails = NotificationDetails(
-        android: androidNotificationDetails,
-        iOS: iosNotificationDetails,
-      );
-      return flutterLocalNotificationsPlugin.show(
-        id: 0,
-        title: 'Cảnh báo nhiệt độ vượt ngưỡng',
-        body:
-            'Nhiệt độ hiện tại ở node ${node.id} '
-            'đang ở mức cao: ${node.temperature} °C',
-        notificationDetails: notificationDetails,
-        payload: 'item x',
-      );
-    }
   }
 
   Widget _buildStatusIcon(double temp) {
